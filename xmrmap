@@ -1,9 +1,10 @@
 #!/bin/php
 <?php
+const DUMMY_ADDR = "4AdUndXHHZ6cfufTMvppY6JwXNouMBzSkbLYfpAV5Usx3skxNgYeYTRJ5UzqtReoS44qo9mtmXCqY45DJ852K5Jv2684Rge";
 const ADDR_POS = "%%ADDR%%";
-const DUMMY_ADDR = "4AdUndXHHZ6cfufTMvppY6JwXNouMBzSkbLYfpAV5Usx3skxNgYeYTRj5UzqtReoS44qo9mtmXCqY45DJ852K5Jv2684Rge";
-const RED = "\x1b[31m";
+const RWLINE = "\e[1A\e[K";
 const RESET = "\x1b[0m";
+const RED = "\x1b[31m";
 
 if (!isset($argv[1]) or strpos("-h", $argv[1]) !== false)
     die("Usage: ./xmrmap [wallet_address]\n");
@@ -22,8 +23,6 @@ define("SEARCH_ADDR", $argv[1]);
 classify_address();
 search_workers();
 
-echo "\nScan finished!\n";
-
 /**
  * Performs a basic classification of the address
  */
@@ -32,11 +31,13 @@ function classify_address()
     echo "Address: " . SEARCH_ADDR . "\n";
     echo "Classification: ";
     if (preg_match("/^[4]/", SEARCH_ADDR)) {
-        if (strlen(SEARCH_ADDR) == 95) echo "Standard address\n\n";
-        if (strlen(SEARCH_ADDR) == 106) echo "Integrated address\n\n";
+        if (strlen(SEARCH_ADDR) == 95) echo "Standard address\n\n\n";
+        if (strlen(SEARCH_ADDR) == 106) echo "Integrated address\n\n\n";
     } elseif (preg_match("/^[8]/", SEARCH_ADDR) and strlen(SEARCH_ADDR) == 95) {
-        echo "Standard subaddress\n\n";
-    } else die("\x1b[31mInvalid address\x1b[0m\n"); ##Validity check can be done in more depth.
+        echo "Standard subaddress\n\n\n";
+    } else {
+        die(RED . "Invalid address\n" . RESET); ##Validity check can be done in more depth.
+    }
 }
 
 /**
@@ -47,11 +48,17 @@ function search_workers()
     $pools = json_decode(file_get_contents("./poolsList.json"), true);
     foreach ($pools as $pool => $request_data) {
 
-        echo "\rScanning: {$pool}";
+        echo RWLINE . "Scanning: {$pool}\n";
+
+//        file_get_contents($pool);
+//        if ($http_response_header == null
+//            or strpos(404, $http_response_header[0])
+//            or strpos(500, $http_response_header[0])
+//        ) continue;
 
         if (scan_pool4workers($request_data)) {
-            echo "\rWorker(s) found at {$pool}\n";
-        }
+            echo RWLINE . "Worker(s) found at {$pool}\n\n";
+        } else echo RWLINE . "Scan finished!\n";
     }
 }
 
@@ -60,16 +67,7 @@ function scan_pool4workers($pool)
     if ($pool["method"] == "GET") {
         $dummy_url = str_replace(ADDR_POS, DUMMY_ADDR, $pool["requestTo"]);
         $worker_url = str_replace(ADDR_POS, SEARCH_ADDR, $pool["requestTo"]);
-        return f_get_length($dummy_url) != f_get_length($worker_url);
+        return md5(file_get_contents($dummy_url)) != md5(file_get_contents($worker_url));
     }
     return false;
-}
-
-/**
- * @param $url
- * @return int length of response body.
- */
-function f_get_length($url)
-{
-    return strlen(file_get_contents($url));
 }

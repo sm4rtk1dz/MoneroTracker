@@ -1,0 +1,10 @@
+{
+  "https://supportxmr.com/": {
+    "requestTo": "https://supportxmr.com/api/miner/%%ADDR%%/chart/hashrate/",
+    "method": "GET"
+  },
+  "https://nanopool.org/": {
+    "requestTo": "https://supportxmr.com/api/miner/%%ADDR%%/chart/hashrate/",
+    "method": "GET"
+  }
+}

@@ -6,6 +6,7 @@ The tool is very easy to use, just provide the wallet address as follow.
 The software will classify the wallet address and will check the different public pools for workers.
 
 ```
+chmod +x ./xmrmap
 php ./xmrmap [wallet_address]
 ```
 

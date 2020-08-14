@@ -7,6 +7,7 @@ The software will classify the wallet address and will check the different publi
 
 ```
 chmod +x ./xmrmap
+
 php ./xmrmap [wallet_address]
 ```
 

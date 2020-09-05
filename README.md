@@ -1,5 +1,5 @@
 # xmrmap 
-xmrmap is software that allows you to track and validate a Monero wallet within different public minning pools in an automated way.
+xmrmap is software that allows you to track and validate a Monero wallet within different public minning pools in an automated way.  
 ![status](https://img.shields.io/badge/status-beta-orange) ![dependencies](https://img.shields.io/badge/dependencies-none-green)
 
 ## Usage
